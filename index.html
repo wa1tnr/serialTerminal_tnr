@@ -33,32 +33,13 @@
         padding: 10px;
         margin: 0px;
     }
-
-    /*
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 5px grey;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #6d7faeb4;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #6d7fae;
-    }*/
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fastest Serial terminal in your browser for Chrome.</title>
 <meta name="Description" content="Set your baud speed and hit connect.
  A serial terminal that runs with out any plugins in chrome.">
-
 <button class="active" onclick="location.href='settings.html'">&#9881;</button>
+<button class="active" onclick="location.href='advanced_terminal/src/html/index.html'">&#128435;</button>
 <button onclick="connectSerial()">Connect</button>
 Baud:
 <input type="text" id="baud" list="baudList" style="width: 10ch;" onclick="this.value = ''"
@@ -107,28 +88,29 @@ Baud:
 <script>
     var port, textEncoder, writableStreamClosed, writer, historyIndex = -1;
     const lineHistory = [];
-
     async function connectSerial() {
         try {
             // Prompt user to select any serial port.
             port = await navigator.serial.requestPort();
             await port.open({ baudRate: document.getElementById("baud").value });
-            await port.setSignals({ dataTerminalReady: document.getElementById("rtsOn").value, requestToSend: document.getElementById("dtrOn").value });
-            listenToPort();
+            let settings = {};
 
+            if (localStorage.dtrOn == "true") settings.dataTerminalReady = true;
+            if (localStorage.rtsOn == "true") settings.requestToSend = true;
+            if (Object.keys(settings).length > 0) await port.setSignals(settings);
+  
+            
             textEncoder = new TextEncoderStream();
             writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
-
             writer = textEncoder.writable.getWriter();
-        } catch {
-            alert("Serial Connection Failed");
+            await listenToPort();
+        } catch (e){
+            alert("Serial Connection Failed" + e);
         }
     }
-
     async function sendCharacterNumber() {
         document.getElementById("lineToSend").value = String.fromCharCode(document.getElementById("lineToSend").value);
     }
-
     async function sendSerialLine() {
         dataToSend = document.getElementById("lineToSend").value;
         lineHistory.unshift(dataToSend);
@@ -137,10 +119,10 @@ Baud:
         if (document.getElementById("addLine").checked == true) dataToSend = dataToSend + "\n";
         if (document.getElementById("echoOn").checked == true) appendToTerminal("> " + dataToSend);
         await writer.write(dataToSend);
+        if (dataToSend.trim().startsWith('\x03')) echo(false);
         document.getElementById("lineToSend").value = "";
-        //await writer.releaseLock();
+        document.getElementById("lineToSend").value = "";
     }
-
     async function listenToPort() {
         const textDecoder = new TextDecoderStream();
         const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
@@ -151,16 +133,15 @@ Baud:
             const { value, done } = await reader.read();
             if (done) {
                 // Allow the serial port to be closed later.
-                //reader.releaseLock();
+                console.log('[readLoop] DONE', done);
+                reader.releaseLock();
                 break;
             }
             // value is a string.
             appendToTerminal(value);
         }
     }
-
     const serialResultsDiv = document.getElementById("serialResults");
-
     async function appendToTerminal(newStuff) {
         serialResultsDiv.innerHTML += newStuff;
         if (serialResultsDiv.innerHTML.length > 3000) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - 3000);
@@ -168,7 +149,6 @@ Baud:
         //scroll down to bottom of div
         serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
     }
-
     function scrollHistory(direction) {
         // Clamp the value between -1 and history length
         historyIndex = Math.max(Math.min(historyIndex + direction, lineHistory.length - 1), -1);
@@ -178,7 +158,6 @@ Baud:
             document.getElementById("lineToSend").value = "";
         }
     }
-
     document.getElementById("lineToSend").addEventListener("keyup", async function (event) {
         if (event.keyCode === 13) {
             sendSerialLine();
@@ -188,12 +167,10 @@ Baud:
             scrollHistory(-1);
         }
     })
-
     document.getElementById("baud").value = (localStorage.baud == undefined ? 9600 : localStorage.baud);
     document.getElementById("addLine").checked = (localStorage.addLine == "false" ? false : true);
     document.getElementById("carriageReturn").checked = (localStorage.carriageReturn == "false" ? false : true);
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
-
 </script>
 <br> © 2021 Autodrop3d Source <a
     href="https://github.com/autodrop3d/serialTerminal.com">https://github.com/autodrop3d/serialTerminal.com</a>

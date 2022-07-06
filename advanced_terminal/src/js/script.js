@@ -233,7 +233,7 @@ async function terminalCommands(curr_line) {
       if (curr_line.trim().startsWith("/prompt")) {
         await setPrompt(curr_line);
       }
-      if (curr_line.trim().startsWith("/")) {
+      if (curr_line.trim().startsWith("/  ")) {
         printToConsoleln("Unknown command", "31", false);
       }
       if (curr_line.trim().startsWith("\x03")) echo(false);

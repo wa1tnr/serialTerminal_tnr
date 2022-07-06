@@ -410,10 +410,10 @@ async function listenToPort() {
   while (port.readable) {
     try {
       while (true) {
-        const { value, done } = await reader.read();
+        var { value, done } = await reader.read();
         // value is a string.
-        if (document.getElementById("carriageReturn").checked == true) value = value + "\r";
-        if (document.getElementById("addLine").checked == true) value = value + "\n";
+        if (document.getElementById("carriageReturnInBound").checked == true) value = value + "\r";
+        if (document.getElementById("addLineInBound").checked == true) value = value + "\n";
         if (done) {
           // Allow the serial port to be closed later.
           console.log("[readLoop] DONE", done);
@@ -541,9 +541,13 @@ document.getElementById("baud").value =
   localStorage.baud == undefined ? 9600 : localStorage.baud;
 document.getElementById("addLine").checked =
   localStorage.addLine == "false" ? false : true;
+document.getElementById("addLineInBound").checked =
+  localStorage.addLine == "false" ? false : true;
 document.getElementById("serialOnlyState").checked =
   localStorage.serialOnlyState == "true" ? true : false;
 document.getElementById("carriageReturn").checked =
+  localStorage.carriageReturn == "false" ? false : true;
+document.getElementById("carriageReturnInBound").checked =
   localStorage.carriageReturn == "false" ? false : true;
 document.getElementById("echoOn").checked =
   localStorage.echoOn == "false" ? false : true;

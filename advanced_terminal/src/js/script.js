@@ -6,16 +6,30 @@ var port,
 const lineHistory = [];
 var termPrompt = localStorage.prompt;
 var version = "v0.1.0";
+var commands = {
+  clear: "/clear",
+  version: "/version",
+  help: "/help",
+  sendline: "/sendline",
+  sendchar: "/sendchar",
+  send: "/send",
+  sendFile: "/sendFile",
+  connect: "/connect",
+  disconnect: "/disconnect",
+  history: "/history",
+  historyPrev: "/historyPrev",
+  historyNext: "/historyNext",
+  setPrompt: "/setPrompt",
+  neofetch: "/neofetch",
+  contributors: "/contributors",
+  refresh: "/refresh",
+}
 
 var neofetch_data = `@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@(@@\/(@@@&#@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/@@@@@@\/@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/@@@@@@#\/@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@(@@@@@@@@@(@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@(\/@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@\/@@@@@@\/@@\/@\/(@%\/@\/@@\/@@@@@\/@@\/@@\/@@@@@@@(@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@#@@\/#@@&@@@@\/@@#&%\/&\/@@@@\/@@@\/%(((@%@@@@@@@@@@@@@#@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@\/&\/\/&\/\/@@@@&@@@@@@\/@@(\/\/&\/@@@@\/@@@%@&(@@(@@@@#@@@@%\/@@@@@@@@@@@@@@@\r\n@@@#\/%@@@@@@@@@#@@%(@\/@@@@@@#@@@\/@\/@@@\/%@(\/&#@@@@@\/@@@\/%#@@@&\/\/\/\/\/@@\/\/@@@@@@@@@@\r\n@@@@@@@@#\/\/\/\/\/&\/@@\/@@@\/@@\/@@@\/@@@\/(@@@@\/@@@@@@\/#\/\/\/\/@@@@@@@@@@@@@@@@\/\/@@@@@@@@@@\r\n@@@@@@@@@@\/\/\/@@(\/\/\/\/\/\/\/\/\/\/\/(\/#\/\/\/\/\/\/\/\/\/\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@\/\/@@@@@@@@@@@\r\n@@@@@@@@@@@@\/\/%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/%@@@@@@@@@@@@\r\n@@@@@@@@@@@@@#\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/\/@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@\/\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@(\/@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@\/\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@(\/\/@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@\/\/\/\/\/\/\/\/\/\/@@@@@@@@@@@@@@@@@@@(\/\/&@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/\/@@@@@@@@@@@@@@@@@@\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\/\/\/\/\/\/\/\/\/(%@@@@@@@@@\/\/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@%@@&%@#%#&%@&%@@#@@@@(((@%@&&####@#@(#@@%@@#@@@@@@@@@@@@@@\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`;
 var contributors = [
   `                      _                     _ \r\n                     (_)                   | |\r\n  _ __ ___  _ __ ___  _ ___  ___ ___   ___ | |\r\n | \'_ \` _ \\| \'_ \` _ \\| \/ __|\/ __\/ _ \\ \/ _ \\| |\r\n | | | | | | | | | | | \\__ \\ (_| (_) | (_) | |\r\n |_| |_| |_|_| |_| |_|_|___\/\\___\\___\/ \\___\/|_|\r\n                                             `,
   `  ______                  _______ _    _ ______ _                \r\n |___  \/                 |__   __| |  | |  ____| |               \r\n    \/ \/ __ _ _ __  _____   _| |  | |__| | |__  | |__   __ _ _ __ \r\n   \/ \/ \/ _\` | \'_ \\|_  \/ | | | |  |  __  |  __| | \'_ \\ \/ _\` | \'__|\r\n  \/ \/_| (_| | | | |\/ \/| |_| | |  | |  | | |____| |_) | (_| | |   \r\n \/_____\\__,_|_| |_\/___|\\__, |_|  |_|  |_|______|_.__\/ \\__,_|_|   \r\n                        __\/ |                                    \r\n                       |___\/                                    `
 ];
-
-//var entries = [];
-//var currPos = 0;
-//var pos = 0;
 
 var curr_line = "";
 async function readPrompt() {
@@ -44,15 +58,22 @@ const terminal = new Terminal({
   rows: 27,
   cols: 167 //any value
 });
+/* let fitAddon = new FitAddon();
+terminal.loadAddon(fitAddon);
+fitAddon.fit();
+
+terminal.onResize(function (evt) {
+  websocket.send({ rows: evt.rows });
+}); */
 terminal.open(document.getElementById("terminal"));
-terminal.prompt = async() => {
+terminal.prompt = async () => {
   termPrompt = await readPrompt();
   terminal.write(`\r\n\x1B[1;3;34m ${termPrompt} \x1B[0m`);
 };
 terminal.writeln("Welcome to the Advanced Browser-based Cereal Terminal.");
 terminal.prompt();
 terminal.onKey((e) => {
-  console.log(e.key);
+  //console.log(e.key);
   const code = e.key.charCodeAt(0);
   const printable =
     !e.key.altKey && !e.key.altGraphKey && !e.key.ctrlKey && !e.key.metaKey;
@@ -180,31 +201,43 @@ function escapeXml(unsafe) {
     }
   });
 }
+function objectKeyMatch(key, obj) {
+  if (typeof obj === "string") return obj.includes(key);
+  if (typeof obj === "object") {
+    for (let i in obj) {
+      if (i === key) return true;
+      if (obj[i] instanceof Object) {
+        if (objectKeyMatch(key, obj[i])) return true;
+      }
+    }
+  }
+  return false;
+}
 async function terminalCommands(curr_line) {
   if (localStorage.serialOnlyState == "true") {
     await sendCMD(curr_line);
   } else {
     try {
-      if (curr_line.trim().startsWith("/clear")) {
-        if (document.getElementById("echoOn").checked == true) terminal.clear();
+      if (curr_line.trim().startsWith(commands.clear)) {
+        advancedTerminalClear();
       }
       if (
-        curr_line.trim().startsWith("/help") ||
+        curr_line.trim().startsWith(commands.help) ||
         curr_line.trim().startsWith("?")
       ) {
         await showHelp();
       }
-      if (curr_line.trim().startsWith("/contributors")) {
+      if (curr_line.trim().startsWith(commands.contributors)) {
         terminal.writeln("");
         terminal.writeln("");
         printToConsoleln(contributors, "33", true);
       }
-      if (curr_line.trim().startsWith("/version")) {
+      if (curr_line.trim().startsWith(commands.version)) {
         terminal.writeln("");
         terminal.writeln("");
         await showVersion();
       }
-      if (curr_line.trim().startsWith("/refresh")) {
+      if (curr_line.trim().startsWith(commands.refresh)) {
         terminal.writeln("Exiting...");
         terminal.prompt();
         terminal.writeln("Exited.");
@@ -213,28 +246,30 @@ async function terminalCommands(curr_line) {
         terminal.clear();
         window.location.reload();
       }
-      if (curr_line.trim().startsWith("/connect")) {
+      if (curr_line.trim().startsWith(commands.connect)) {
         await connectSerial();
       }
-      if (curr_line.trim().startsWith("/send")) {
+      if (curr_line.trim().startsWith(commands.send)) {
         await sendCMD(curr_line);
       }
-      if (curr_line.trim().startsWith("/sendline")) {
+      if (curr_line.trim().startsWith(commands.sendline)) {
         await sendCMD(curr_line, true);
       }
-      if (curr_line.trim().startsWith("/sendfile")) {
+      if (curr_line.trim().startsWith(commands.sendFile)) {
         await sendFile();
       }
-      if (curr_line.trim().startsWith("/neofetch")) {
+      if (curr_line.trim().startsWith(commands.neofetch)) {
         terminal.writeln("");
         terminal.writeln("");
         printToConsoleln(neofetch_data, 32, false);
       }
-      if (curr_line.trim().startsWith("/prompt")) {
+      if (curr_line.trim().startsWith(commands.setPrompt)) {
         await setPrompt(curr_line);
       }
-      if (curr_line.trim().startsWith("/  ")) {
-        printToConsoleln("Unknown command", "31", false);
+      if (curr_line.trim().startsWith("/") && curr_line.trim().length < 2) {
+        terminal.writeln("");
+        terminal.writeln("");
+        printToConsoleln("Unknown command. Type /help for a list of commands.", 31, false);
       }
       if (curr_line.trim().startsWith("\x03")) echo(false);
     } catch (err) {
@@ -287,7 +322,7 @@ async function sendSerialLine() {
   if (document.getElementById("addLine").checked == true)
     dataToSend = dataToSend + "\n";
   if (document.getElementById("echoOn").checked == true)
-    if (dataToSend.trim().startsWith("/clear")) terminal.clear();
+    if (dataToSend.trim().startsWith(commands.clear)) terminal.clear();
     else printToConsole(dataToSend, "36", false);
   terminalCommands(dataToSend);
   if (port) {
@@ -403,7 +438,7 @@ async function appendToAdvancedTerminal(newStuff) {
 }
 async function advancedTerminalClear() {
   terminal.clear();
-  terminal.prompt();
+  //terminal.prompt();
 }
 function scrollHistory(direction) {
   historyIndex = Math.max(

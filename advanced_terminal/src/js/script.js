@@ -10,7 +10,6 @@ var commands = {
   clear: "/clear",
   version: "/version",
   help: "/help",
-  sendline: "/sendline",
   sendchar: "/sendchar",
   send: "/send",
   sendFile: "/sendFile",
@@ -215,7 +214,10 @@ function objectKeyMatch(key, obj) {
 }
 async function terminalCommands(curr_line) {
   if (localStorage.serialOnlyState == "true") {
-    await sendCMD(curr_line);
+    if (document.getElementById("addLine").checked) await sendCMD(curr_line, true);
+    else if (document.getElementById("carriageReturn").checked) await sendCMD(curr_line, false, true);
+    else if (document.getElementById("carriageReturn").checked && document.getElementById("addLine").checked) await sendCMD(curr_line, true, true);
+    else await sendCMD(curr_line);
   } else {
     try {
       if (curr_line.trim().startsWith(commands.clear)) {
@@ -250,10 +252,10 @@ async function terminalCommands(curr_line) {
         await connectSerial();
       }
       if (curr_line.trim().startsWith(commands.send)) {
-        await sendCMD(curr_line);
-      }
-      if (curr_line.trim().startsWith(commands.sendline)) {
-        await sendCMD(curr_line, true);
+        if (document.getElementById("addLine").checked) await sendCMD(curr_line, true);
+        else if (document.getElementById("carriageReturn").checked) await sendCMD(curr_line, false, true);
+        else if (document.getElementById("carriageReturn").checked && document.getElementById("addLine").checked) await sendCMD(curr_line, true, true);
+        else await sendCMD(curr_line);
       }
       if (curr_line.trim().startsWith(commands.sendFile)) {
         await sendFile();
@@ -297,12 +299,6 @@ function showHelp() {
   printToConsoleln("Connect to a serial port", "36", false);
   printToConsole("/send - ", "32", false);
   printToConsoleln("Send data to the serial port", "36", false);
-  printToConsole("/sendline - ", "32", false);
-  printToConsoleln(
-    "Send data to the serial port and add a new line",
-    "36",
-    false
-  );
   printToConsole("/sendfile - ", "32", false);
   printToConsoleln("Send a file to the serial port", "36", false);
   printToConsole("/neofetch - ", "32", false);
@@ -368,7 +364,7 @@ async function sendFile(data) {
     console.log(err);
   }
 }
-async function sendCMD(data, newLine = false) {
+async function sendCMD(data, newLine = false, carriageReturn = false) {
   try {
     let data_split = data.split(" ");
     if (data_split.length > 1) {
@@ -379,6 +375,9 @@ async function sendCMD(data, newLine = false) {
       }
       if (newLine) {
         str += "\n";
+      }
+      if (carriageReturn) {
+        str += "\r";
       }
       if (port) {
         writer.write(str);

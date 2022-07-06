@@ -411,17 +411,15 @@ async function listenToPort() {
     try {
       while (true) {
         const { value, done } = await reader.read();
+        // value is a string.
+        if (document.getElementById("carriageReturn").checked == true) value = value + "\r";
+        if (document.getElementById("addLine").checked == true) value = value + "\n";
         if (done) {
           // Allow the serial port to be closed later.
           console.log("[readLoop] DONE", done);
           reader.releaseLock();
           break;
         }
-        // value is a string.
-        if (document.getElementById("carriageReturn").checked == true)
-          value = value + "\r";
-        if (document.getElementById("addLine").checked == true)
-          value = value + "\n";
         printToConsole(value);
       }
     } catch (error) {

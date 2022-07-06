@@ -18,7 +18,15 @@ var contributors = [
 //var pos = 0;
 
 var curr_line = "";
-
+async function readPrompt() {
+  try {
+    let prompt = localStorage.getItem("prompt");
+    if (prompt == null) prompt = "$";
+    return prompt;
+  } catch (err) {
+    console.log(err);
+  }
+}
 const terminal = new Terminal({
   theme: {
     background: "#202225",
@@ -37,12 +45,9 @@ const terminal = new Terminal({
   cols: 167 //any value
 });
 terminal.open(document.getElementById("terminal"));
-terminal.prompt = () => {
-  if (localStorage.prompt > 0) {
-    terminal.write(`\r\n\x1B[1;3;32m${termPrompt}\x1B[0m`);
-  } else {
-    terminal.write("\r\n\x1B[0;3;34m $ \x1B[0m ");
-  }
+terminal.prompt = async() => {
+  termPrompt = await readPrompt();
+  terminal.write(`\r\n\x1B[1;3;34m${termPrompt} \x1B[0m`);
 };
 terminal.writeln("Welcome to the Advanced Browser-based Cereal Terminal.");
 terminal.prompt();
@@ -177,7 +182,7 @@ function escapeXml(unsafe) {
 }
 async function terminalCommands(curr_line) {
   if (localStorage.serialOnlyState == "true") {
-    sendCMD(curr_line);
+    await sendCMD(curr_line);
   } else {
     try {
       if (curr_line.trim().startsWith("/clear")) {
@@ -212,13 +217,13 @@ async function terminalCommands(curr_line) {
         await connectSerial();
       }
       if (curr_line.trim().startsWith("/send")) {
-        sendCMD(curr_line);
+        await sendCMD(curr_line);
       }
       if (curr_line.trim().startsWith("/sendline")) {
-        sendCMD(curr_line, true);
+        await sendCMD(curr_line, true);
       }
       if (curr_line.trim().startsWith("/sendfile")) {
-        sendFile();
+        await sendFile();
       }
       if (curr_line.trim().startsWith("/neofetch")) {
         terminal.writeln("");
@@ -226,12 +231,12 @@ async function terminalCommands(curr_line) {
         printToConsoleln(neofetch_data, 32, false);
       }
       if (curr_line.trim().startsWith("/prompt")) {
-        setPrompt(curr_line);
+        await setPrompt(curr_line);
       }
-      if (dataToSend.trim().startsWith("/")) {
+      if (curr_line.trim().startsWith("/")) {
         printToConsoleln("Unknown command", "31", false);
       }
-      if (dataToSend.trim().startsWith("\x03")) echo(false);
+      if (curr_line.trim().startsWith("\x03")) echo(false);
     } catch (err) {
       console.log(err);
     }
@@ -290,50 +295,62 @@ async function sendSerialLine() {
   }
   document.getElementById("lineToSend").value = "";
 }
-function setPrompt(data) {
-  let data_split = data.split(" ");
-  if (data_split.length > 1) {
-    let str = data_split[1];
-    str = str.substring(0);
-    for (let i = 2; i < data_split.length; i++) {
-      str += " " + data_split[i];
+async function setPrompt(data) {
+  try {
+    let data_split = data.split(" ");
+    if (data_split.length > 1) {
+      let str = data_split[1];
+      str = str.substring(0);
+      for (let i = 2; i < data_split.length; i++) {
+        str += " " + data_split[i];
+      }
+      localStorage.setItem("prompt", str);
+      window.location.reload();
     }
-    localStorage.setItem("prompt", str);
-    window.location.reload();
+  } catch (err) {
+    console.log(err);
   }
 }
 async function sendFile(data) {
-  let data_split = data.split(" ");
-  if (data_split.length > 1) {
-    let str = data_split[1];
-    str = str.substring(0);
-    for (let i = 2; i < data_split.length; i++) {
-      str += " " + data_split[i];
-    }
-    let file = new File([str], str, { type: "text/plain" });
-    let reader = new FileReader();
-    reader.onload = function () {
-      if (port) {
-        await writer.write(reader.result);
+  try {
+    let data_split = data.split(" ");
+    if (data_split.length > 1) {
+      let str = data_split[1];
+      str = str.substring(0);
+      for (let i = 2; i < data_split.length; i++) {
+        str += " " + data_split[i];
       }
-    };
-    reader.readAsText(file);
+      let file = new File([str], str, { type: "text/plain" });
+      let reader = new FileReader();
+      reader.onload = function () {
+        if (port) {
+          writer.write(reader.result);
+        }
+      };
+      reader.readAsText(file);
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
 async function sendCMD(data, newLine = false) {
-  let data_split = data.split(" ");
-  if (data_split.length > 1) {
-    let str = data_split[1];
-    str = str.substring(0);
-    for (let i = 2; i < data_split.length; i++) {
-      str += " " + data_split[i];
+  try {
+    let data_split = data.split(" ");
+    if (data_split.length > 1) {
+      let str = data_split[1];
+      str = str.substring(0);
+      for (let i = 2; i < data_split.length; i++) {
+        str += " " + data_split[i];
+      }
+      if (newLine) {
+        str += "\n";
+      }
+      if (port) {
+        writer.write(str);
+      }
     }
-    if (newLine) {
-      str += "\n";
-    }
-    if (port) {
-      await writer.write(str);
-    }
+  } catch (error) {
+    console.log(error);
   }
 }
 function printToConsoleln(data, color, array) {

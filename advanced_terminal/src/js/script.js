@@ -228,6 +228,10 @@ async function terminalCommands(curr_line) {
       if (curr_line.trim().startsWith("/prompt")) {
         setPrompt(curr_line);
       }
+      if (dataToSend.trim().startsWith("/")) {
+        printToConsoleln("Unknown command", "31", false);
+      }
+      if (dataToSend.trim().startsWith("\x03")) echo(false);
     } catch (err) {
       console.log(err);
     }
@@ -280,23 +284,7 @@ async function sendSerialLine() {
   if (document.getElementById("echoOn").checked == true)
     if (dataToSend.trim().startsWith("/clear")) terminal.clear();
     else printToConsole(dataToSend, "36", false);
-  if (dataToSend.trim().startsWith("/clear")) terminal.clear();
-  if (dataToSend.trim().startsWith("/neofetch"))
-    printToConsoleln(neofetch_data, 32, false);
-  if (dataToSend.trim().startsWith("/contributors"))
-    printToConsoleln(contributors, "33", true);
-  if (dataToSend.trim().startsWith("/version")) showVersion();
-  if (dataToSend.trim().startsWith("/refresh")) window.location.reload();
-  if (dataToSend.trim().startsWith("/connect")) await connectSerial();
-  if (dataToSend.trim().startsWith("/send")) sendCMD(dataToSend);
-  if (dataToSend.trim().startsWith("/sendline")) sendCMD(dataToSend, true);
-  if (dataToSend.trim().startsWith("/sendfile")) sendFile(dataToSend);
-  if (dataToSend.trim().startsWith("/prompt")) setPrompt(dataToSend);
-  if (dataToSend.trim().startsWith("/help")) showHelp();
-  if (dataToSend.trim().startsWith("/")) {
-    printToConsoleln("Unknown command", "31", false);
-  }
-  if (dataToSend.trim().startsWith("\x03")) echo(false);
+  terminalCommands(dataToSend);
   if (port) {
     await writer.write(dataToSend);
   }
@@ -314,7 +302,7 @@ function setPrompt(data) {
     window.location.reload();
   }
 }
-function sendFile(data) {
+async function sendFile(data) {
   let data_split = data.split(" ");
   if (data_split.length > 1) {
     let str = data_split[1];
@@ -326,13 +314,13 @@ function sendFile(data) {
     let reader = new FileReader();
     reader.onload = function () {
       if (port) {
-        writer.write(reader.result);
+        await writer.write(reader.result);
       }
     };
     reader.readAsText(file);
   }
 }
-function sendCMD(data, newLine = false) {
+async function sendCMD(data, newLine = false) {
   let data_split = data.split(" ");
   if (data_split.length > 1) {
     let str = data_split[1];
@@ -344,7 +332,7 @@ function sendCMD(data, newLine = false) {
       str += "\n";
     }
     if (port) {
-      writer.write(str);
+      await writer.write(str);
     }
   }
 }
@@ -380,6 +368,10 @@ async function listenToPort() {
           reader.releaseLock();
           break;
         }
+        if (document.getElementById("carriageReturn").checked == true)
+          value = value + "\r";
+        if (document.getElementById("addLine").checked == true)
+          printToConsoleln(value, "36", false);
         // value is a string.
         printToConsole(value, 36, false);
       }

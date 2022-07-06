@@ -40,6 +40,22 @@ async function readPrompt() {
     console.log(err);
   }
 }
+async function setPrompt(data) {
+  try {
+    let data_split = data.split(" ");
+    if (data_split.length > 1) {
+      let str = data_split[1];
+      str = str.substring(0);
+      for (let i = 2; i < data_split.length; i++) {
+        str += " " + data_split[i];
+      }
+      localStorage.setItem("prompt", str);
+      window.location.reload();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 const terminal = new Terminal({
   theme: {
     background: "#202225",
@@ -76,7 +92,7 @@ terminal.onKey((e) => {
   const code = e.key.charCodeAt(0);
   const printable =
     !e.key.altKey && !e.key.altGraphKey && !e.key.ctrlKey && !e.key.metaKey;
-  printToConsole(e.key, "36", false);
+  printToConsole(e.key);
   if (code == 127) {
     //Backspace
     terminal.write("\b \b");
@@ -240,12 +256,10 @@ async function terminalCommands(curr_line) {
         await showVersion();
       }
       if (curr_line.trim().startsWith(commands.refresh)) {
-        terminal.writeln("Exiting...");
-        terminal.prompt();
-        terminal.writeln("Exited.");
-        terminal.prompt();
+        printToConsoleln("Exiting...", "33", false);
+        printToConsoleln("Exited.", "33", false);
         terminal.writeln("");
-        terminal.clear();
+        advancedTerminalClear();
         window.location.reload();
       }
       if (curr_line.trim().startsWith(commands.connect)) {
@@ -263,7 +277,7 @@ async function terminalCommands(curr_line) {
       if (curr_line.trim().startsWith(commands.neofetch)) {
         terminal.writeln("");
         terminal.writeln("");
-        printToConsoleln(neofetch_data, 32, false);
+        printToConsoleln(neofetch_data, "32", false);
       }
       if (curr_line.trim().startsWith(commands.setPrompt)) {
         await setPrompt(curr_line);
@@ -271,7 +285,7 @@ async function terminalCommands(curr_line) {
       if (curr_line.trim().startsWith("/") && curr_line.trim().length < 2) {
         terminal.writeln("");
         terminal.writeln("");
-        printToConsoleln("Unknown command. Type /help for a list of commands.", 31, false);
+        printToConsoleln("Unknown command. Type /help for a list of commands.", "31", false);
       }
       if (curr_line.trim().startsWith("\x03")) echo(false);
     } catch (err) {
@@ -286,23 +300,23 @@ function showHelp() {
   terminal.writeln("");
   terminal.writeln("");
   printToConsole("/help - ", "32", false);
-  printToConsoleln("Show this help, you can also use `?`", "36", false);
+  printToConsoleln("Show this help, you can also use `?`");
   printToConsole("/clear - ", "32", false);
-  printToConsoleln("Clear the terminal", "36", false);
+  printToConsoleln("Clear the terminal");
   printToConsole("/contributors - ", "32", false);
-  printToConsoleln("Show the contributors", "36", false);
+  printToConsoleln("Show the contributors");
   printToConsole("/version - ", "32", false);
-  printToConsoleln("Show the version", "36", false);
+  printToConsoleln("Show the version");
   printToConsole("/refresh - ", "32", false);
-  printToConsoleln("Refresh the page", "36", false);
+  printToConsoleln("Refresh the page");
   printToConsole("/connect - ", "32", false);
-  printToConsoleln("Connect to a serial port", "36", false);
+  printToConsoleln("Connect to a serial port");
   printToConsole("/send - ", "32", false);
-  printToConsoleln("Send data to the serial port", "36", false);
+  printToConsoleln("Send data to the serial port");
   printToConsole("/sendfile - ", "32", false);
-  printToConsoleln("Send a file to the serial port", "36", false);
+  printToConsoleln("Send a file to the serial port");
   printToConsole("/neofetch - ", "32", false);
-  printToConsoleln("Show the neofetch data", "36", false);
+  printToConsoleln("Show the neofetch data");
 }
 async function sendCharacterNumber() {
   document.getElementById("lineToSend").value = String.fromCharCode(
@@ -319,28 +333,12 @@ async function sendSerialLine() {
     dataToSend = dataToSend + "\n";
   if (document.getElementById("echoOn").checked == true)
     if (dataToSend.trim().startsWith(commands.clear)) terminal.clear();
-    else printToConsole(dataToSend, "36", false);
+    else printToConsole(dataToSend);
   terminalCommands(dataToSend);
   if (port) {
     await writer.write(dataToSend);
   }
   document.getElementById("lineToSend").value = "";
-}
-async function setPrompt(data) {
-  try {
-    let data_split = data.split(" ");
-    if (data_split.length > 1) {
-      let str = data_split[1];
-      str = str.substring(0);
-      for (let i = 2; i < data_split.length; i++) {
-        str += " " + data_split[i];
-      }
-      localStorage.setItem("prompt", str);
-      window.location.reload();
-    }
-  } catch (err) {
-    console.log(err);
-  }
 }
 async function sendFile(data) {
   try {
@@ -387,7 +385,7 @@ async function sendCMD(data, newLine = false, carriageReturn = false) {
     console.log(error);
   }
 }
-function printToConsoleln(data, color, array) {
+function printToConsoleln(data, color = "36", array = false) {
   if (array == true) {
     for (var i = 0; i < data.length; i++) {
       terminal.writeln(`\x1B[0;3;${color}m${data[i]}\x1B[0m`);
@@ -396,7 +394,7 @@ function printToConsoleln(data, color, array) {
     terminal.writeln(`\x1B[0;3;${color}m${data}\x1B[0m`);
   }
 }
-function printToConsole(data, color, array) {
+function printToConsole(data, color = "36", array = false) {
   if (array == true) {
     for (var i = 0; i < data.length; i++) {
       terminal.write(`\x1B[0;3;${color}m${data[i]}\x1B[0m`);
@@ -419,12 +417,12 @@ async function listenToPort() {
           reader.releaseLock();
           break;
         }
+        // value is a string.
         if (document.getElementById("carriageReturn").checked == true)
           value = value + "\r";
         if (document.getElementById("addLine").checked == true)
-          printToConsoleln(value, "36", false);
-        // value is a string.
-        printToConsole(value, 36, false);
+          value = value + "\n";
+        printToConsole(value);
       }
     } catch (error) {
       //! TODO: Handle non-fatal read error.

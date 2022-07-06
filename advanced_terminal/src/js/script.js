@@ -32,7 +32,9 @@ const terminal = new Terminal({
   fontSize: 14,
   fontWeight: "normal",
   fontWeightBold: "bold",
-  renderType: "canvas"
+  renderType: "canvas",
+  rows: 27,
+  cols: 167 //any value
 });
 terminal.open(document.getElementById("terminal"));
 terminal.prompt = () => {
@@ -372,9 +374,6 @@ async function listenToPort() {
     try {
       while (true) {
         const { value, done } = await reader.read();
-        if (value) {
-          //log.textContent += value + "\n";
-        }
         if (done) {
           // Allow the serial port to be closed later.
           console.log("[readLoop] DONE", done);

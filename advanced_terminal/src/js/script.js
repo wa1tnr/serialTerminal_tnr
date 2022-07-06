@@ -47,7 +47,7 @@ const terminal = new Terminal({
 terminal.open(document.getElementById("terminal"));
 terminal.prompt = async() => {
   termPrompt = await readPrompt();
-  terminal.write(`\r\n\x1B[1;3;34m${termPrompt} \x1B[0m`);
+  terminal.write(`\r\n\x1B[1;3;34m ${termPrompt} \x1B[0m`);
 };
 terminal.writeln("Welcome to the Advanced Browser-based Cereal Terminal.");
 terminal.prompt();

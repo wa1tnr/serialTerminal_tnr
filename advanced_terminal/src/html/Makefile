@@ -18,10 +18,10 @@ clean:
 stamped:	captured.$$$$ index.html
 	@cat ./index.html >> ${TMPFI}
 	@echo "" >> ${TMPFI}
-	@echo "</html>" >> ${TMPFI}
 	@echo "<br>" >> ${TMPFI}
 	@cat "`cat thisfile_7777`" >> ${TMPFI}
-	@echo "<br>" >> ${TMPFI}
+	@echo "</br>" >> ${TMPFI}
+	@echo "</html>" >> ${TMPFI}
 	@git checkout -- index.html # dangerous with no saved changes
 	@diff ./index.html ./${TMPFI} ; exit 0
 

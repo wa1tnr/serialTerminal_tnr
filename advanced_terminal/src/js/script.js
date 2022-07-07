@@ -554,7 +554,7 @@ document.getElementById("baud").value =
 document.getElementById("addLine").checked =
   localStorage.addLine == "false" ? false : true;
 document.getElementById("addLineInBound").checked =
-  localStorage.addLine == "false" ? false : true;
+  localStorage.addLine == "false" ? true : false;
 document.getElementById("serialOnlyState").checked =
   localStorage.serialOnlyState == "true" ? true : false;
 document.getElementById("carriageReturn").checked =

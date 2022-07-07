@@ -399,8 +399,10 @@ function printToConsoleln(data, color = "36", array = false) {
 function printToConsole(data, color = "36", array = false) {
   if (data.includes(`\x0a`)) {
     terminal.write('~');
-    terminal.write(`\x0d`);
-  } // experiment 7 Jul 17:44z
+    if (document.getElementById("addLineInBound").checked == true) terminal.write(`\x0a`);  
+    if (document.getElementById("carriageReturnInBound").checked == true) terminal.write(`\x0d`);
+    // terminal.write(`\x0d`);
+  } // experiment 7 Jul 22:19z
   terminal.write(`\x1B[0;3;${color}m${data}\x1B[0m`); // << workhorse
 }
 
@@ -413,8 +415,6 @@ async function listenToPort() {
       while (true) {
         var { value, done } = await reader.read();
         // value is a string.
-        if (document.getElementById("carriageReturnInBound").checked == true) value = value + "\r";
-        if (document.getElementById("addLineInBound").checked == true) value = value + "\n";
         if (done) {
           // Allow the serial port to be closed later.
           console.log("[readLoop] DONE", done);

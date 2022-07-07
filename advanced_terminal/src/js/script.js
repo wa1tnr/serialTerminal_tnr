@@ -397,11 +397,15 @@ function printToConsoleln(data, color = "36", array = false) {
 }
 
 function printToConsole(data, color = "36", array = false) {
-  if (data.includes(`\x0a`)) {
+  if (data.includes(
+      `\x0d` ||
+      `\x0a`
+      )
+  ) { // fripp's fresh fish
     terminal.write('~');
-    if (document.getElementById("addLineInBound").checked == true) terminal.write(`\x0a`);  
-    if (document.getElementById("carriageReturnInBound").checked == true) terminal.write(`\x0d`);
-    // terminal.write(`\x0d`);
+    // if (document.getElementById("addLineInBound").checked == true) terminal.write(`\x0a`);  
+    // if (document.getElementById("carriageReturnInBound").checked == true) terminal.write(`\x0d`);
+    terminal.write(`\x0a`);
   } // experiment 7 Jul 22:19z
   terminal.write(`\x1B[0;3;${color}m${data}\x1B[0m`); // << workhorse
 }

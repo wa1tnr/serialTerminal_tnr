@@ -1,3 +1,4 @@
+// Thu  7 Jul 20:06:30 UTC 2022 tnr
 var port,
   textEncoder,
   writableStreamClosed,
@@ -394,15 +395,15 @@ function printToConsoleln(data, color = "36", array = false) {
     terminal.writeln(`\x1B[0;3;${color}m${data}\x1B[0m`);
   }
 }
+
 function printToConsole(data, color = "36", array = false) {
-  if (array == true) {
-    for (var i = 0; i < data.length; i++) {
-      terminal.write(`\x1B[0;3;${color}m${data[i]}\x1B[0m`);
-    }
-  } else {
-    terminal.write(`\x1B[0;3;${color}m${data}\x1B[0m`);
-  }
+  if (data.includes(`\x0a`)) {
+    terminal.write('~');
+    terminal.write(`\x0d`);
+  } // experiment 7 Jul 17:44z
+  terminal.write(`\x1B[0;3;${color}m${data}\x1B[0m`); // << workhorse
 }
+
 async function listenToPort() {
   const textDecoder = new TextDecoderStream();
   const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
@@ -440,9 +441,20 @@ function scrollHistory(direction) {
     Math.min(historyIndex + direction, lineHistory.length - 1),
     -1
   );
+  // UNRELATED LINE HISTORY experiment - please ignore it.
   if (historyIndex >= 0) {
     document.getElementById("lineToSend").value = lineHistory[historyIndex];
-    appendToAdvancedTerminal(lineHistory[historyIndex]);
+    appendToAdvancedTerminal((lineHistory[historyIndex]) + "   "); // three spaces julia
+
+    // 1 under TOS is skipped when backtracking off the donk! boundary
+    // but can be reached by going past its place and moving in the other
+    // direction (towards a donk!) again.
+
+    if (historyIndex === (lineHistory.length - 1)) {
+        historyIndex -= 1;
+        terminal.write(" donk! ");
+    }
+
   } else {
     document.getElementById("lineToSend").value = "";
     terminal.clear();
@@ -564,3 +576,5 @@ localStorage.setItem("portSettings", JSON.stringify(portSettings));
 window.onload = async function () {
   await forgetPort();
 };
+
+// end.

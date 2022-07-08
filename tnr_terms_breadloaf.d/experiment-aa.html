@@ -35,9 +35,11 @@
         font-family: monospace;
         white-space: pre;
         height: calc(77%);
+
         width: calc(95%);
         border-style: solid;
         overflow: scroll;
+
         background-color: rgb(0, 0, 0);
         color: rgb(0, 205, 205);
         padding: 10px;
@@ -183,16 +185,14 @@ Baud:
 
 
     async function printToConsole(newStuff) {
-        if ( newStuff.includes( `\x0d` || `\x0a`)) { // fripp's fresh fish
-            serialResultsDiv.innerHTML += '~';
-        }
         if ( newStuff.includes( `\x0d` )) {
-            serialResultsDiv.innerHTML -= `\x0a`; // wow stripping works here
+            newStuff -= `\x0d`;
+            if ( newStuff.includes( `\x0a` )) {
+                newStuff -= `\x0a`;
+            }
+        // why is this not double-spacing:
+        serialResultsDiv.innerHTML += `\x0d`;
         }
-        if ( newStuff.includes( `\x0a` )) {
-            serialResultsDiv.innerHTML -= `\x0d`;
-        }
-
         serialResultsDiv.innerHTML += newStuff; // << workhorse   // terminal.write(`${data}`); 
         serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
     }

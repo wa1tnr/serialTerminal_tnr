@@ -15,4 +15,14 @@ Fri  8 Jul 01:38:33 UTC 2022
    It's also the target that currently is supported to about 4800 bps;
    any faster and characters are dropped.
 
+
+   This was observed post-hoc: GTKTerm has a hexadecimal mode that
+   comes in very handy for such situations.  Instead of relying on
+   settings and 'programming' ("I thought I had this set the other way!")
+   GTKTerm lets you see what your target board's serial io  is *doing*
+   even if you don't have any source code for it, to compare to, nor
+   any specs.
+
+   It's objective information.
+
 end.

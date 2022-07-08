@@ -173,8 +173,9 @@ Baud:
 
     const serialResultsDiv = document.getElementById("serialResults");
 
-    var serialRHeightLocal = serialResultsDiv.clientHeight;
-    serialRHeightLocal -= 200; // units are what
+    const serialRHeightLocal = serialResultsDiv.clientHeight + 200;
+
+    // serialRHeightLocal += 200; // units are what .. px maybe - a minus-equals seems to extend it vertically
 
 
 

@@ -179,16 +179,24 @@ Baud:
         serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
     }
 
+
+
+
     async function printToConsole(newStuff) {
         if ( newStuff.includes( `\x0d` || `\x0a`)) { // fripp's fresh fish
             serialResultsDiv.innerHTML += '~';
-            serialResultsDiv.innerHTML += `\x0d`;
-            serialResultsDiv.innerHTML += `\x0a`;
         }
-        serialResultsDiv.innerHTML += newStuff; // << workhorse
-        // terminal.write(`${data}`); 
+        if ( newStuff.includes( `\x0d` )) {
+            serialResultsDiv.innerHTML -= `\x0a`; // wow stripping works here
+        }
+        if ( newStuff.includes( `\x0a` )) {
+            serialResultsDiv.innerHTML -= `\x0d`;
+        }
+
+        serialResultsDiv.innerHTML += newStuff; // << workhorse   // terminal.write(`${data}`); 
         serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
     }
+
 
 
     document.getElementById("lineToSend").addEventListener("keyup", async function (event) {

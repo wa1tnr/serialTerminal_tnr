@@ -1,4 +1,4 @@
-<!-- 08 July   17:24:45 UTC  2022 -->
+<!-- 08 July   20:09:29 UTC  2022 -->
 
 <!-- color chart:
 
@@ -195,9 +195,33 @@ Baud:
     }
 
 
+// ////////////////////////////////////////////////////////////////////////////
+// /////////////////   https://api.jquery.com/val/   //////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
+//
+// $.valHooks.textarea = {
+//   get: function( elem ) {
+//     return elem.value.replace( /\r?\n/g, "\r\n" );
+//   }
+// };
+// ////////////////////////////////////////////////////////////////////////////
 
 
     async function printToConsole(newStuff) {
+
+    const dxToScroll = 2000;
+
+        newStuff = newStuff.replace( /\r?\n/g, "" );
+
+        serialResultsDiv.innerHTML += newStuff; // << workhorse
+
+        if (serialResultsDiv.innerHTML.length > slice_ln) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - slice_ln);
+
+        serialResultsDiv.scrollTo(0, dxToScroll);
+    }
+
+
+    async function prankToConsole(newStuff) {
         if ( newStuff.includes( `\x0d` )) {
             newStuff -= `\x0d`;
             if ( newStuff.includes( `\x0a` )) {
@@ -245,6 +269,6 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
+<br/>v002c 21:48:39  on  8 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

@@ -1,3 +1,14 @@
+Fri  8 Jul 15:26:41 UTC 2022
+
+   Tested Altair-Duino (compiled on Arduino IDE for the Arduino Due
+   board) in GTKTerm, in hexadecimal mode.
+
+   0x0d 0x0a line endings, but the author utilized extra 0x0a singletons
+   mixed in.  Most line endings were just 0x0d 0x0a there.
+
+   Did not examine further.
+
+
 Fri  8 Jul 01:38:33 UTC 2022
 
    The Arduino IDE generated program under testing generates

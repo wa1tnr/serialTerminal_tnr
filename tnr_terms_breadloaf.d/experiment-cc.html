@@ -132,10 +132,19 @@ Baud:
 <script>
     var port, textEncoder, writableStreamClosed, writer;
 
-    // 19:32z 08 July:
+    // 22:14z 08 July:
     // nothing seen has really worked very well, with the slice:
 
-    const slice_ln = 3480; // fresh fish - lines to scroll .. expressed in bytes as a weak approximation
+    // const slice_ln = 2540; // fresh fish - 27-ish lines to scroll
+    const slice_ln = 2528; // fresh fish - 27-ish lines to scroll
+
+    //  .. (possibly) expressed in bytes/chars, as a weak approximation.
+
+    // adjust slice_ln to decide how much scrolled text there is.
+
+    // this seems to be a character count, not a vertical line count.
+
+    // is a trade-off or work-around.  Better method unknown (locally).
 
     async function connectSerial() {
         try {
@@ -269,6 +278,7 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>v002c 21:48:39  on  8 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
+<br/>v002e 22:21:54  on  8 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
+<br/>modified in July of 2022 by wa1tnr</br>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

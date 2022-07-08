@@ -1,4 +1,6 @@
-<!-- 08 July   20:09:29 UTC  2022 -->
+<!-- 08 July   22:45:29 UTC  2022 -->
+
+<!-- works with mecrisp target -->
 
 <!-- color chart:
 
@@ -49,7 +51,7 @@
     }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>That gum you like so much is coming back into style</title>
+<title>Use with the mecrisp-stellaris micro:Bit (0x0a line endings)</title>
 <meta name="Description" content="Set your baud speed and hit connect.
  A serial terminal that runs with out any plugins in chrome.">
 
@@ -220,7 +222,7 @@ Baud:
 
     const dxToScroll = 2000;
 
-        newStuff = newStuff.replace( /\r?\n/g, "" );
+        // newStuff = newStuff.replace( /\r?\n/g, "\r" );
 
         serialResultsDiv.innerHTML += newStuff; // << workhorse
 
@@ -278,7 +280,7 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>v002e 22:21:54  on  8 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
+<br/>v002g 22:45:29  on  8 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support throughout<br/>
 <br/>modified in July of 2022 by wa1tnr</br>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

@@ -34,15 +34,17 @@
     #serialResults {
         font-family: monospace;
         white-space: pre;
-        height: calc(72%);
+        height: calc(95% - 240px);
 
-        width: calc(95%);
+        width: calc(95% - 100px);
         border-style: solid;
         overflow: scroll;
 
         background-color: rgb(0, 0, 0);
         color: rgb(0, 205, 205);
-        padding: 10px;
+        padding: 36px;
+        padding-left: 24px;
+        padding-top: 24px;
         margin: 0px;
     }
 </style>
@@ -58,6 +60,8 @@ Baud:
 
 
 <!-- detailed:
+
+
 
 <datalist id="baudList">
 
@@ -127,7 +131,11 @@ Baud:
 
 <script>
     var port, textEncoder, writableStreamClosed, writer;
-    const slice_ln = 1480; // fresh fish - lines to scroll .. expressed in bytes as a weak approximation
+
+    // 19:32z 08 July:
+    // nothing seen has really worked very well, with the slice:
+
+    const slice_ln = 3480; // fresh fish - lines to scroll .. expressed in bytes as a weak approximation
 
     async function connectSerial() {
         try {
@@ -199,7 +207,9 @@ Baud:
         serialResultsDiv.innerHTML += newStuff; // << workhorse   // terminal.write(`${data}`); 
         if (serialResultsDiv.innerHTML.length > slice_ln) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - slice_ln);
         // serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
-        serialResultsDiv.scrollTop = serialRHeightLocal;
+        // serialResultsDiv.scrollTop = serialRHeightLocal;
+        // ## bookmark
+        serialResultsDiv.scrollTo(0, 2000);
     }
 
 

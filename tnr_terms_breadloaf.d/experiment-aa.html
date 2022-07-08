@@ -34,7 +34,7 @@
     #serialResults {
         font-family: monospace;
         white-space: pre;
-        height: calc(77%);
+        height: calc(72%);
 
         width: calc(95%);
         border-style: solid;
@@ -47,7 +47,7 @@
     }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fastest Gun in the West except Portugal</title>
+<title>That gum you like so much is coming back into style</title>
 <meta name="Description" content="Set your baud speed and hit connect.
  A serial terminal that runs with out any plugins in chrome.">
 
@@ -127,6 +127,7 @@ Baud:
 
 <script>
     var port, textEncoder, writableStreamClosed, writer;
+    const slice_ln = 1480; // fresh fish - lines to scroll .. expressed in bytes as a weak approximation
 
     async function connectSerial() {
         try {
@@ -172,6 +173,9 @@ Baud:
 
     const serialResultsDiv = document.getElementById("serialResults");
 
+    var serialRHeightLocal = serialResultsDiv.clientHeight;
+    serialRHeightLocal -= 200; // units are what
+
 
 
     async function appendToTerminal(newStuff) {
@@ -190,11 +194,11 @@ Baud:
             if ( newStuff.includes( `\x0a` )) {
                 newStuff -= `\x0a`;
             }
-        // why is this not double-spacing:
-        serialResultsDiv.innerHTML += `\x0d`;
         }
         serialResultsDiv.innerHTML += newStuff; // << workhorse   // terminal.write(`${data}`); 
-        serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
+        if (serialResultsDiv.innerHTML.length > slice_ln) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - slice_ln);
+        // serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
+        serialResultsDiv.scrollTop = serialRHeightLocal;
     }
 
 

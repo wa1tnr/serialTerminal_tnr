@@ -1,0 +1,27 @@
+
+cc (no alt) is no good on mecrisp target (0x0a line-endings).
+
+  cc-alt-0d: good on mecrisp (wondering why tho)
+  cc-alt-0a: good on mecrisp (expected, and is, working).
+
+experiment-cc.html is no good on stock arduino (ainsu).
+
+  cc-alt-0a: good on ainsu (0x0d, 0x0a line-endings - both - confirmed in gtkterm)
+  cc-alt-0d: good on ainsu as well (0x0d, 0x0a line-endings)
+
+
+due: cp2104 a6/a7 test:
+
+   0a - works but double-spaced 4800 bps Due CP2104 a6/a7
+
+   0d - works but double-spaced 4800 bps Due CP2104 a6/a7
+
+variants 0d and 0a are looking suspiciously similar. ;)
+
+git mv experiment-cc.html  experiment-cc-alternate-0d+0a.html
+
+The Due does 0x0d and 0x0a (both) so the basefile is now renamed for that situation.
+
+
+
+END.

@@ -25,4 +25,14 @@ Fri  8 Jul 01:38:33 UTC 2022
 
    It's objective information.
 
+   There is a utility to this: lines that are printed with 0x0a line endings,
+   uniquely, do not overwrite one another.  The messages are 'stair-stepped'
+   but 100% of the messages are seen (if line-wrapping is functioning, and
+   in some other contexts as well).
+
+   Whereas, with 0x0d (singleton) line endings, each line printed overwrites
+   the line that came before it, and nothing advances vertically at all.
+
+   For debugging, the former is vastly preferred, one may agree. ;)
+
 end.

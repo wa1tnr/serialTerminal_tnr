@@ -176,6 +176,13 @@
 
     // is a trade-off or work-around.  Better method unknown (locally).
 
+
+
+
+
+
+
+
     async function connectSerial() {
         try {
             port = await navigator.serial.requestPort();
@@ -213,6 +220,26 @@
         await writer.write(dataToSend);
         document.getElementById("lineToSend").value = "";
     }
+
+
+
+class LineBreakTransformer {
+constructor() {
+this.chunks = "";
+}
+  transform(chunk, controller) { this.chunks += chunk;
+    const lines = this.chunks.split("\r\n");
+    this.chunks = lines.pop(); lines.forEach((line) => controller.enqueue(line));
+}
+flush(controller) {
+controller.enqueue(this.chunks);
+}
+}
+
+
+
+
+
 
     async function listenToPort() {
         const textDecoder = new TextDecoderStream();
@@ -346,5 +373,6 @@
 
 </script>
 
+<br> mobile bama swamp buggy
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

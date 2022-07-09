@@ -1,5 +1,11 @@
 <!-- Sat  9 Jul 02:52:34 UTC 2022 -->
+<!--
 
+Serial.setTimeout(1);
+
+  https://stackoverflow.com/questions/72585790/delayed-read-performance-when-using-navigator-serial-for-serial-communication
+
+-->
 <!-- color chart:
 
   ref: /etc/X11/rgb.txt Debian amd64
@@ -150,7 +156,13 @@ Baud:
         try {
             // Prompt user to select any serial port.
             port = await navigator.serial.requestPort();
-            await port.open({ baudRate: document.getElementById("baud").value });
+
+            // await port.open({ baudRate: document.getElementById("baud").value });
+
+            await this.port.open({ baudRate: 4800, bufferSize: 255,
+                dataBits: 8, flowControl: 'none', parity: 'none', stopBits: 1 });
+            // this.open = true;
+
             listenToPort();
 
             textEncoder = new TextEncoderStream();
@@ -301,7 +313,7 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>v002-tt- 02:55:39  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
+<br/>v002-tt-2- 11:57:29z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
 <br/>modified in July of 2022 by wa1tnr</br>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

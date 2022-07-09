@@ -1,4 +1,4 @@
-<!-- Sat  9 Jul 17:42:45 UTC 2022 -->
+<!--    Sat  9 Jul 21:21:17 UTC 2022 -->
 
 <!-- color chart:
 
@@ -38,7 +38,9 @@
 
         width: calc(95% - 100px);
         border-style: solid;
+
         overflow: scroll;
+
 
         background-color: rgb(0, 0, 0);
         color: rgb(0, 205, 205);
@@ -135,8 +137,10 @@
     ">erase</button>
 
 <br>&nbsp;</br>
-<br>Result: works well on very slow connections.</br>
-<br/>v002-uu-0d- 17:42:45z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
+<br>May be the good one that is fast and scrolls to bottom.</br>
+<br>This could be a trade-off worth considering.</br>
+
+<br/>v002-uu-2b- 21:21:17z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
 
 <br/>modified in July of 2022 by wa1tnr</br>
 
@@ -177,10 +181,43 @@
     // is a trade-off or work-around.  Better method unknown (locally).
 
 
+class LineBreakTransformer {
+    constructor() {
+        this.chunks = "";
+    }
+
+    transform(chunk, controller) {
+        this.chunks += chunk;
+        const lines = this.chunks.split("\r\n");
+        this.chunks = lines.pop();
+        lines.forEach((line) => controller.enqueue(line));
+    }
+
+    flush(controller) {
+        controller.enqueue(this.chunks);
+    }
+}
 
 
+    async function listenToPort() {
+        const textDecoder = new TextDecoderStream();
 
+        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
 
+        const reader = textDecoder.readable.getReader();
+
+        // const reader = textDecoder.readable.pipeThrough(new TransformStream(new LineBreakTransformer())).getReader();
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                break;
+            }
+            // value is a string.
+            printToConsole(value);
+            // appendToTerminal(value);
+        }
+    }
 
 
     async function connectSerial() {
@@ -198,8 +235,8 @@
                 stopBits: 1
             });
 
-            this.open = true;
-            this.setTimeout(1);
+            // this.open = true;
+            // this.setTimeout(1);
 
             listenToPort();
 
@@ -212,6 +249,16 @@
         }
     }
 
+
+
+
+    const serialResultsDiv = document.getElementById("serialResults");
+
+    const serialRHeightLocal = serialResultsDiv.clientHeight + 200;
+
+    // serialRHeightLocal += 200; // units are what .. px maybe - a minus-equals seems to extend it vertically
+
+
     async function sendCharacterNumber() {
         document.getElementById("lineToSend").value = String.fromCharCode(document.getElementById("lineToSend").value);
     }
@@ -220,51 +267,6 @@
         await writer.write(dataToSend);
         document.getElementById("lineToSend").value = "";
     }
-
-
-
-class LineBreakTransformer {
-constructor() {
-this.chunks = "";
-}
-  transform(chunk, controller) { this.chunks += chunk;
-    const lines = this.chunks.split("\r\n");
-    this.chunks = lines.pop(); lines.forEach((line) => controller.enqueue(line));
-}
-flush(controller) {
-controller.enqueue(this.chunks);
-}
-}
-
-
-
-
-
-
-    async function listenToPort() {
-        const textDecoder = new TextDecoderStream();
-        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-        const reader = textDecoder.readable.getReader();
-
-
-        // Listen to data coming from the serial device.
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) {
-                break;
-            }
-            // value is a string.
-            printToConsole(value);
-            // appendToTerminal(value);
-        }
-    }
-
-    const serialResultsDiv = document.getElementById("serialResults");
-
-    const serialRHeightLocal = serialResultsDiv.clientHeight + 200;
-
-    // serialRHeightLocal += 200; // units are what .. px maybe - a minus-equals seems to extend it vertically
-
 
 
     async function appendToTerminal(newStuff) {
@@ -288,58 +290,11 @@ controller.enqueue(this.chunks);
 
 
     async function printToConsole(newStuff) {
-
-    const dxToScroll = 2000;
-
-    // const vcursor_d = "~0x0d\x0d"; // embed the control char if wanted
-    const vcursor_d = " ~0x0d"; // no data follows this one its EOL
-    const vcursor_a = "\x0a~0x0a "; // data follows this one
-
-    // ainsu/fmx0/arduino IDE: (often): 0x0d,0x0a
-
-    // mecrisp: 0x0a only
-    // other:   0x0d only
-
-        if ( newStuff.includes( `\x0d` )) {
-            var tmpNewStuff = newStuff;
-            newStuff = ""
-            tmpNewStuff = tmpNewStuff.replace( /\r/g, "" );
-            tmpNewStuff += vcursor_d; // add a vcursor
-            newStuff = tmpNewStuff;
-            tmpNewStuff = "";
-        }
-
-        if ( newStuff.includes( `\x0a` )) {
-            newStuff = newStuff.replace( /\n/g, "" ); // remove it entirely or add a marker
-            newStuff += vcursor_a;
-        }
-
-        // newStuff = newStuff.replace( /\r?\n/g, "" );
-
         serialResultsDiv.innerHTML += newStuff; // << workhorse
 
-        if (serialResultsDiv.innerHTML.length > slice_ln) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - slice_ln);
-
-        serialResultsDiv.scrollTo(0, dxToScroll);
+        // may slow things a bit:
+        serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
     }
-
-
-    async function prankToConsole(newStuff) {
-        if ( newStuff.includes( `\x0d` )) {
-            newStuff -= `\x0d`;
-            if ( newStuff.includes( `\x0a` )) {
-                newStuff -= `\x0a`;
-            }
-        }
-        serialResultsDiv.innerHTML += newStuff; // << workhorse   // terminal.write(`${data}`); 
-        if (serialResultsDiv.innerHTML.length > slice_ln) serialResultsDiv.innerHTML = serialResultsDiv.innerHTML.slice(serialResultsDiv.innerHTML.length - slice_ln);
-        // serialResultsDiv.scrollTop = serialResultsDiv.scrollHeight;
-        // serialResultsDiv.scrollTop = serialRHeightLocal;
-        // ## bookmark
-        serialResultsDiv.scrollTo(0, 2000);
-    }
-
-
 
     document.getElementById("lineToSend").addEventListener("keyup", async function (event) {
 
@@ -373,6 +328,6 @@ controller.enqueue(this.chunks);
 
 </script>
 
-<br> mobile bama swamp buggy
+<br> tehachapi
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

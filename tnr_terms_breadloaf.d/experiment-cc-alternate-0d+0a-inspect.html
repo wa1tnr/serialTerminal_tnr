@@ -1,4 +1,4 @@
-<!-- Sat  9 Jul 00:55:37 UTC 2022 -->
+<!-- Sat  9 Jul 02:52:34 UTC 2022 -->
 
 <!-- color chart:
 
@@ -220,20 +220,26 @@ Baud:
 
     const dxToScroll = 2000;
 
-    const vcursor_d = " ~0x0d";
-    const vcursor_a = " ~0x0a ";
+    // const vcursor_d = "~0x0d\x0d"; // embed the control char if wanted
+    const vcursor_d = " ~0x0d"; // no data follows this one its EOL
+    const vcursor_a = "\x0a~0x0a "; // data follows this one
 
+    // ainsu/fmx0/arduino IDE: (often): 0x0d,0x0a
+
+    // mecrisp: 0x0a only
+    // other:   0x0d only
 
         if ( newStuff.includes( `\x0d` )) {
             var tmpNewStuff = newStuff;
             newStuff = ""
-            tmpNewStuff -= `\x0d`;
-            tmpNewStuff += vcursor_d;
+            tmpNewStuff = tmpNewStuff.replace( /\r/g, "" );
+            tmpNewStuff += vcursor_d; // add a vcursor
             newStuff = tmpNewStuff;
             tmpNewStuff = "";
         }
 
         if ( newStuff.includes( `\x0a` )) {
+            newStuff = newStuff.replace( /\n/g, "" ); // remove it entirely or add a marker
             newStuff += vcursor_a;
         }
 
@@ -295,7 +301,7 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>v002k 00:55:37  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
+<br/>v002-tt- 02:55:39  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
 <br/>modified in July of 2022 by wa1tnr</br>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

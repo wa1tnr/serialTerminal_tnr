@@ -1,11 +1,5 @@
-<!-- Sat  9 Jul 12:44:34 UTC 2022 -->
-<!--
+<!-- Sat  9 Jul 17:42:45 UTC 2022 -->
 
-Serial.setTimeout(1);
-
-  https://stackoverflow.com/questions/72585790/delayed-read-performance-when-using-navigator-serial-for-serial-communication
-
--->
 <!-- color chart:
 
   ref: /etc/X11/rgb.txt Debian amd64
@@ -59,14 +53,16 @@ Serial.setTimeout(1);
 <meta name="Description" content="Set your baud speed and hit connect.
  A serial terminal that runs with out any plugins in chrome.">
 
-<button onclick="connectSerial()">Connect</button>
-Baud:
-<input type="text" id="baud" list="baudList" style="width: 10ch;" onclick="this.value = ''"
-    onchange="localStorage.baud = this.value">
+
+<div id="serialResults">
+</div>
+
+<input type="text" id="lineToSend" style="width:calc(8%)">
+
+&nbsp;&nbsp;&nbsp;<em>&lt;</em> getch <!-- mistress cleo -->
 
 
 <!-- detailed:
-
 
 
 <datalist id="baudList">
@@ -117,10 +113,34 @@ Baud:
 <!--                    END of datalist iterations                          -->
 
 
-<button onclick="serialResultsDiv.innerHTML = '';">Clear</button>
+<input type="text" id="baud" list="baudList"
+   style="margin-left: 160px; width:9ch;" onclick="this.value = ''"
+    onchange="localStorage.baud = this.value">
+
+<em>&lt;</em> baud
+
+<button onclick="connectSerial()"
+  style="background-color: black;
+  margin-left: 40px; <!-- relief from neighbor to left -->
+  "
+>connect</button>
+
+
+<button onclick="serialResultsDiv.innerHTML = '';"
+  style="background-color: black;
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-left: 80px;
+
+    ">erase</button>
+
+<br>&nbsp;</br>
+<br>Result: works well on very slow connections.</br>
+<br/>v002-uu-0d- 17:42:45z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
+
+<br/>modified in July of 2022 by wa1tnr</br>
 
 <br>
-<input type="text" id="lineToSend" style="width:calc(100% - 165px)">
 <button onclick="sendSerialLine()" style="width:45px">Send</button>
 <button onclick="sendCharacterNumber()" style="width:100px">Send Char</button>
 <br>
@@ -132,9 +152,12 @@ Baud:
 <label for="echoOn">echo</label>
 
 
+
+
 <br>
-<div id="serialResults">
-</div>
+
+
+
 
 <script>
     var port, textEncoder, writableStreamClosed, writer;
@@ -322,8 +345,6 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br>Result: dog's breakfast at 57600 - mecrisp - way more work ahead to get this right.</br>
-<br/>v002-uu-0d- 12:53:31z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
-<br/>modified in July of 2022 by wa1tnr</br>
+
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>

@@ -1,4 +1,33 @@
 
+Sat  9 Jul 00:30:56 UTC 2022
+
+The plan is to modify the -cc stuff just committed, with
+the -inspect suffix in the name, to expose the presence of
+0x0d and 0x0a on a live session (by rendering them visibly).
+
+Probably:
+           Line feed:
+           ~~~~~~~~~
+           0x0a is followed by a tilde ('~') as a virtual cursor trace.
+           This way, the linefeed (0x0a) moves the 'cursor' vertically,
+           a tilde is placed there (often, mid-line).
+
+           But the action of 0x0a itself (move cursor down) happens first.
+
+
+           Carriage return:
+           ~~~~~~~~~~~~~~~
+           '~' in this system precedes 0x0d (so it appears on the end
+           of the line, and only then does the carriage, return to the
+           left end of that same line).
+
+
+
+
+Earlier lab notes follow.
+
+(prior to) Sat  9 Jul 00:30:56 UTC 2022
+
 cc (no alt) is no good on mecrisp target (0x0a line-endings).
 
   cc-alt-0d: good on mecrisp (wondering why tho)

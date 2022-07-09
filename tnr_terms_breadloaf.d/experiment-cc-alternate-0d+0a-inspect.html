@@ -1,4 +1,4 @@
-<!-- Sat  9 Jul 12:25:45 UTC 2022 -->
+<!-- Sat  9 Jul 12:41:34 UTC 2022 -->
 <!--
 
 Serial.setTimeout(1);
@@ -158,7 +158,15 @@ Baud:
 
             // await port.open({ baudRate: document.getElementById("baud").value });
 
-            await this.port.open({ baudRate: document.getElementById("baud").value, bufferSize: 128, dataBits: 8, flowControl: 'none', parity: 'none', stopBits: 1 });
+            await this.port.open({
+                baudRate: document.getElementById("baud").value,
+                bufferSize: 128,
+                dataBits: 8,
+                flowControl: 'none',
+                parity: 'none',
+                stopBits: 1
+            });
+
             this.open = true;
             this.setTimeout(1);
 
@@ -169,7 +177,7 @@ Baud:
 
             writer = textEncoder.writable.getWriter();
         } catch {
-            alert("Serial Connection Failed");
+            alert("catch and alert: \r\n\r\n    Serial Connection Failed\r\n        in:\r\n    connectSerial()\r\n\r\n(Scroll down for explanation)\r\n\r\n\r\nTrying to connect twice without disconnecting first will throw this error.\r\n\r\nMaybe other things do, as well.\r\n\r\n    -tnr");
         }
     }
 
@@ -313,7 +321,7 @@ Baud:
     document.getElementById("echoOn").checked = (localStorage.echoOn == "false" ? false : true);
 
 </script>
-<br/>v002-uu-0b- 12:28:46z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
+<br/>v002-uu-0c- 12:41:34z  on  Sat  9 Jul 2022 - translate ENTER and ESCape keybindings - with hotkey support, and expose line endings visibly<br/>
 <br/>modified in July of 2022 by wa1tnr</br>
 <br> © 2021 Mike Molinari (mmiscool) Source <a
     href="https://github.com/mmiscool/serialTerminal.com">https://github.com/mmiscool/serialTerminal.com</a>
